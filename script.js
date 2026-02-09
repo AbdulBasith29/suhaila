@@ -16,24 +16,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Make the "No" button hard to click by moving it on hover
-    noButton.addEventListener('mouseover', () => {
-        // Determine the boundaries within the container
+    /**
+     * Reposition the "No" button within the bounds of the question container.
+     * The button is absolutely positioned relative to the container so each call
+     * will place it at a new random location inside the card. This function
+     * ensures the button stays visible and does not accumulate offsets from
+     * previous moves.
+     */
+    function repositionNoButton() {
+        // Ensure the noButton is absolutely positioned relative to the container
+        noButton.style.position = 'absolute';
+        // Get dimensions of the container and button
         const containerRect = questionContainer.getBoundingClientRect();
         const btnRect = noButton.getBoundingClientRect();
-        // Calculate random positions (avoid leaving the container)
+        // Compute maximum top/left values so the button remains inside
         const maxX = containerRect.width - btnRect.width;
         const maxY = containerRect.height - btnRect.height;
+        // Choose random coordinates within the allowed range
         const randomX = Math.random() * maxX;
         const randomY = Math.random() * maxY;
-        noButton.style.position = 'relative';
+        // Apply the new position
         noButton.style.left = `${randomX}px`;
         noButton.style.top = `${randomY}px`;
+    }
+
+    // Capture the initial position of the "No" button relative to its container so that
+    // switching to absolute positioning doesn't cause it to jump to the top-left corner.
+    {
+        const containerRect = questionContainer.getBoundingClientRect();
+        const initialRect = noButton.getBoundingClientRect();
+        // Compute offsets relative to the container
+        const offsetX = initialRect.left - containerRect.left;
+        const offsetY = initialRect.top - containerRect.top;
+        // Switch to absolute positioning using the calculated offsets
+        noButton.style.position = 'absolute';
+        noButton.style.left = `${offsetX}px`;
+        noButton.style.top = `${offsetY}px`;
+    }
+
+    // Make the "No" button hard to click by moving it on hover
+    noButton.addEventListener('mouseover', () => {
+        repositionNoButton();
     });
 
-    // Add a gentle warning when the "No" button is clicked
-    noButton.addEventListener('click', () => {
+    // Add a gentle warning and reposition when the "No" button is clicked
+    noButton.addEventListener('click', (e) => {
+        e.preventDefault();
         alert('Are you sure? Please reconsider 😊');
+        repositionNoButton();
     });
 
     // Function to create a single heart element and animate it
