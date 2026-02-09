@@ -86,3 +86,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }, duration * 1000);
     }
 });
+
+// Keep the 'No' button playful
